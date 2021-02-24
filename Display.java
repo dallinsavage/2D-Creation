@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -16,11 +15,9 @@ public class Display extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		Shape selection= new Shape(375, 375);
+		Shape[] selection = new Shape[1];
 		ArrayList<Shape> shapes = new ArrayList<Shape>();
-		shapes.add(selection);
 		Pane pane = new Pane();
-		pane.getChildren().addAll(shapes);
 		Scene scene = new Scene(pane, 750, 750);
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("2D Creation");
@@ -33,6 +30,8 @@ public class Display extends Application {
 		ToggleGroup tools = new ToggleGroup();
 		VBox vBox = new VBox();
 		Button newShape = new Button("New Shape");
+		RadioButton select = new RadioButton("Select");
+		select.setToggleGroup(tools);
 		RadioButton move = new RadioButton("Move");
 		move.setToggleGroup(tools);
 		RadioButton color = new RadioButton("Change Color");
@@ -41,10 +40,42 @@ public class Display extends Application {
 		resize.setToggleGroup(tools);
 		RadioButton addPoint = new RadioButton("Add Point");
 		addPoint.setToggleGroup(tools);
-		vBox.getChildren().addAll(newShape, move, color, resize,addPoint);
+		vBox.getChildren().addAll(newShape, select, move, color, resize, addPoint);
 		pane.getChildren().add(vBox);
 		
 		//tool bar events
+		pane.setOnMouseClicked(e -> {
+			
+			// select shape
+			if (tools.getSelectedToggle() == select) {
+				Shape closest = shapes.get(0);
+				double clickX = e.getX();
+				double clickY = e.getY();
+				for (int i = 0; i < shapes.size(); i++) {
+					if (Math.abs(shapes.get(i).getCenterX() - clickX) < Math.abs(closest.getCenterX() - clickX) &&
+							Math.abs(shapes.get(i).getCenterY() - clickY) < Math.abs(closest.getCenterY() - clickY)) {
+						closest = shapes.get(i);
+					}
+				}
+				selection[0] = closest;
+				select(selection[0], closest);
+			}
+			
+			//move selected shape
+			else if (tools.getSelectedToggle() == move) {
+				System.out.println(pane.getChildren().removeAll(shapes));
+				System.out.println(shapes.remove(selection[0]));
+				System.out.println(selection[0].getCenterX());
+				selection[0].setCenterX(e.getX());
+				selection[0].setCenterY(e.getY());
+				System.out.println(selection[0].getCenterX());
+				System.out.println(shapes.add(selection[0]));
+				System.out.println(pane.getChildren().addAll(shapes));
+			}
+			else if (tools.getSelectedToggle() == resize) {
+				
+			}
+		});
 		newShape.setOnAction(e -> {
 			pane.getChildren().removeAll(shapes);
 			shapes.add((new Shape(375, 375)));
@@ -58,7 +89,7 @@ public class Display extends Application {
 		change.setOnAction(e -> {
 			String entryColor = entry.getText();
 			Color c = Color.web(entryColor);
-			selection.setFill(c);
+			selection[0].setFill(c);
 			vBox.getChildren().removeAll(newColor, entry, change);
 			color.setSelected(false);
 		});
@@ -68,5 +99,12 @@ public class Display extends Application {
 	
 	public static void main(String[] args) {
 		launch(args);
+	}
+	public void select(Shape current, Shape newSelection) {
+		current.setSelected(false);
+		current.setStroke(current.getFill());
+		newSelection.setSelected(true);
+		newSelection.setStroke(Color.BLACK);
+		newSelection.setStrokeDashOffset(10);
 	}
 }
