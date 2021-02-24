@@ -1,29 +1,27 @@
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.scene.shape.Polygon;
 
-public class Shape extends Polygon implements Observable{
-	private int centerX;
-	private int centerY;
+public class Shape extends Polygon{
+	private double centerX;
+	private double centerY;
 	boolean selected;
 	Shape() {
 		super();
 	}
-	Shape(int newCenterX, int newCenterY) {
+	Shape(double newCenterX, double newCenterY) {
 		super(newCenterX - 50, newCenterY - 50, newCenterX + 50, newCenterY - 50, newCenterX + 50, newCenterY + 50, newCenterX - 50, newCenterY + 50);
 		centerX = newCenterX;
 		centerY = newCenterY;
 	}
-	public int getCenterX() {
+	public double getCenterX() {
 		return centerX;
 	}
-	public void setCenterX(int newCenterX) {
+	public void setCenterX(double newCenterX) {
 		centerX = newCenterX;
 	}
-	public int getCenterY() {
+	public double getCenterY() {
 		return centerY;
 	}
-	private void setCenterY(int newCenterY) {
+	public void setCenterY(double newCenterY) {
 		centerY = newCenterY;
 	}
 	public boolean getSelected() {
@@ -32,14 +30,7 @@ public class Shape extends Polygon implements Observable{
 	public void setSelected(boolean select) {
 		selected = select;
 	}
-	@Override
-	public void addListener(InvalidationListener listener) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void removeListener(InvalidationListener listener) {
-		// TODO Auto-generated method stub
+	public void draw() {
 		
 	}
 }
