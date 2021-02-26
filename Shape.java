@@ -1,4 +1,5 @@
 import javafx.collections.ObservableList;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 
 public class Shape extends Polygon{
@@ -11,12 +12,16 @@ public class Shape extends Polygon{
 	}
 	Shape(double newCenterX, double newCenterY) {
 		super(newCenterX - 50, newCenterY - 50, newCenterX + 50, newCenterY - 50, newCenterX + 50, newCenterY + 50, newCenterX - 50, newCenterY + 50);
+		this.setStrokeWidth(2);
+		this.setStroke(Color.BLACK);
 		points = this.getPoints();
 		centerX = newCenterX;
 		centerY = newCenterY;
 	}
 	Shape(double newCenterX, double newCenterY, double[] newPoints) {
 		super(newPoints);
+		this.setStrokeWidth(2);
+		this.setStroke(Color.BLACK);
 		points = this.getPoints();
 		centerX = newCenterX;
 		centerY = newCenterY;
@@ -50,5 +55,9 @@ public class Shape extends Polygon{
 		double[] doubleList = convertPoints(getPoints());
 		Shape shape = new Shape(this.getCenterX(), this.getCenterY(), doubleList);
 		return shape;
+	}
+	public void deselect() {
+		setSelected(false);
+		setStroke(this.getFill());
 	}
 }
