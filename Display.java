@@ -51,18 +51,22 @@ public class Display extends Application {
 			
 			// select shape
 			if (tools.getSelectedToggle() == select) {
-				Shape closest = shapes.get(shapes.size() - 1);
+				Shape closest = shapes.get(0);
 				double clickX = e.getX();
 				double clickY = e.getY();
 				for (int i = 0; i < shapes.size(); i++) {
-					if (Math.abs(shapes.get(i).getCenterX() - clickX) > Math.abs(closest.getCenterX() - clickX) &&
-							Math.abs(shapes.get(i).getCenterY() - clickY) > Math.abs(closest.getCenterY() - clickY)) {
+					if (Math.abs(shapes.get(i).getCenterX() - clickX) < Math.abs(closest.getCenterX() - clickX) &&
+							Math.abs(shapes.get(i).getCenterY() - clickY) < Math.abs(closest.getCenterY() - clickY)) {
 						closest = shapes.get(i);
 					}
-					System.out.println(Math.abs(shapes.get(i).getCenterX() - clickX));
+				}
+				if (selection[0] == null) {
+				}
+				else {
+					selection[0].deselect();
 				}
 				selection[0] = closest;
-				select(selection[0], closest);
+				select(closest);
 			}
 			
 			//move selected shape
@@ -72,18 +76,26 @@ public class Display extends Application {
 				pane.getChildren().add(line);
 				PathTransition pt = new PathTransition(Duration.millis(1), line, selection[0]);
 				pt.play();
+				selection[0].setCenterX(e.getX());
+				selection[0].setCenterY(e.getY());
 				pane.getChildren().remove(line);
 			}
+			
+			// resize selected shape
 			else if (tools.getSelectedToggle() == resize) {
-				selection[0].setScaleX(Math.abs(selection[0].getCenterX() - e.getX()) / 100);
-				selection[0].setScaleY(Math.abs(selection[0].getCenterX() - e.getX()) / 100);
+				selection[0].setScaleX(Math.abs(selection[0].getCenterX() - e.getX()) / 50);
+				selection[0].setScaleY(Math.abs(selection[0].getCenterY() - e.getY()) / 50);
 			}
 		});
+		
+		//add new shape
 		newShape.setOnAction(e -> {
 			pane.getChildren().removeAll(shapes);
 			shapes.add((new Shape(375, 375)));
 			pane.getChildren().addAll(shapes);
 		});
+		
+		//change selected shape color
 		color.setOnAction(e -> {
 			vBox.getChildren().addAll(newColor, entry, change);
 			});
@@ -93,16 +105,25 @@ public class Display extends Application {
 			selection[0].setFill(c);
 			vBox.getChildren().removeAll(newColor, entry, change);
 			color.setSelected(false);
+			if ( c == Color.BLACK) {
+				selection[0].setStroke(Color.RED);
+			}
+			else {
+				selection[0].setStroke(Color.BLACK);
+			}
 		});
 	}
 	
 	public static void main(String[] args) {
 		launch(args);
 	}
-	public void select(Shape current, Shape newSelection) {
-		current.setSelected(false);
-		current.setStroke(current.getFill());
+	public void select(Shape newSelection) {
 		newSelection.setSelected(true);
-		newSelection.setStroke(Color.BLACK);
+		if (newSelection.getFill() == Color.BLACK) {
+			newSelection.setStroke(Color.RED);
+		}
+		else {
+			newSelection.setStroke(Color.BLACK);
+		}
 	}
 }
