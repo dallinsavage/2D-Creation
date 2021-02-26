@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import javafx.animation.PathTransition;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -9,7 +10,9 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class Display extends Application {
 
@@ -57,32 +60,42 @@ public class Display extends Application {
 						closest = shapes.get(i);
 					}
 				}
+				if (selection[0] == null) {
+				}
+				else {
+					selection[0].deselect();
+				}
 				selection[0] = closest;
-				select(selection[0], closest);
+				select(closest);
 			}
 			
 			//move selected shape
 			else if (tools.getSelectedToggle() == move) {
-				System.out.println(pane.getChildren().removeAll(shapes));
-				System.out.println(shapes.remove(selection[0]));
-				System.out.println(selection[0].getCenterX());
+				Line line = new Line(selection[0].getCenterX(), selection[0].getCenterY(), e.getX(), e.getY());
+				line.setOpacity(0);
+				pane.getChildren().add(line);
+				PathTransition pt = new PathTransition(Duration.millis(1), line, selection[0]);
+				pt.play();
 				selection[0].setCenterX(e.getX());
 				selection[0].setCenterY(e.getY());
-				System.out.println(selection[0].getCenterX());
-				System.out.println(shapes.add(selection[0]));
-				System.out.println(pane.getChildren().addAll(shapes));
+				pane.getChildren().remove(line);
 			}
+			
+			// resize selected shape
 			else if (tools.getSelectedToggle() == resize) {
-				
+				selection[0].setScaleX(Math.abs(selection[0].getCenterX() - e.getX()) / 50);
+				selection[0].setScaleY(Math.abs(selection[0].getCenterY() - e.getY()) / 50);
 			}
 		});
+		
+		//add new shape
 		newShape.setOnAction(e -> {
 			pane.getChildren().removeAll(shapes);
 			shapes.add((new Shape(375, 375)));
 			pane.getChildren().addAll(shapes);
 		});
-		move.setOnAction(e -> {
-		});
+		
+		//change selected shape color
 		color.setOnAction(e -> {
 			vBox.getChildren().addAll(newColor, entry, change);
 			});
@@ -92,19 +105,25 @@ public class Display extends Application {
 			selection[0].setFill(c);
 			vBox.getChildren().removeAll(newColor, entry, change);
 			color.setSelected(false);
+			if ( c == Color.BLACK) {
+				selection[0].setStroke(Color.RED);
+			}
+			else {
+				selection[0].setStroke(Color.BLACK);
+			}
 		});
-		resize.setOnAction(e -> {
-		});	
 	}
 	
 	public static void main(String[] args) {
 		launch(args);
 	}
-	public void select(Shape current, Shape newSelection) {
-		current.setSelected(false);
-		current.setStroke(current.getFill());
+	public void select(Shape newSelection) {
 		newSelection.setSelected(true);
-		newSelection.setStroke(Color.BLACK);
-		newSelection.setStrokeDashOffset(10);
+		if (newSelection.getFill() == Color.BLACK) {
+			newSelection.setStroke(Color.RED);
+		}
+		else {
+			newSelection.setStroke(Color.BLACK);
+		}
 	}
 }
