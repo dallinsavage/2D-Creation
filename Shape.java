@@ -10,7 +10,7 @@ public class Shape extends Polygon{
 	private boolean selected;
 	private double[] points;
 	private ArrayList<Circle> shownPoints = new ArrayList<Circle>();
-	private ArrayList<Point> pointList = new ArrayList();
+	private ArrayList<Point> pointList = new ArrayList<Point>();
 	Shape() {
 		super();
 	}
@@ -83,6 +83,12 @@ public class Shape extends Polygon{
 		shownPoints = list;
 	}
 	public ArrayList<Circle> getShownPoints() {
+		ArrayList<Circle> circleArray = new ArrayList<Circle>();
+		ArrayList<Point> points = this.getPointList();
+		for (int i = 0; i < points.size(); i++) {
+			circleArray.add(new Circle(points.get(i).getPointX(), points.get(i).getPointY(), 4));
+		}
+		this.setShownPoints(circleArray);
 		return shownPoints;
 	}
 	public ArrayList<Point> getPointList() {
