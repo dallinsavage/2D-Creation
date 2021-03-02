@@ -1,3 +1,4 @@
+
 import javafx.scene.shape.Circle;
 
 public class Point {
@@ -14,5 +15,11 @@ public class Point {
 	}
 	public double getPointY() {
 		return y;
+	}
+	public void setPointX(double newX) {
+		x = newX;
+	}
+	public void setPointY(double newY) {
+		y = newY;
 	}
 }
