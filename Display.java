@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import javafx.animation.PathTransition;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -10,16 +11,17 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class Display extends Application {
-
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		Shape[] selection = new Shape[1];
 		ArrayList<Shape> shapes = new ArrayList<Shape>();
+		ArrayList<Circle> shownPoints = new ArrayList<Circle>();
 		Pane pane = new Pane();
 		Scene scene = new Scene(pane, 750, 750);
 		primaryStage.setScene(scene);
@@ -64,13 +66,26 @@ public class Display extends Application {
 				}
 				else {
 					selection[0].deselect();
+					shownPoints.clear();
+					for (int i = 0; i < selection[0].getPointList().size(); i++) {
+						shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
+					}
+					pane.getChildren().removeAll(shownPoints);
 				}
 				selection[0] = closest;
 				select(closest);
+				shownPoints.clear();
+				for (int i = 0; i < selection[0].getPointList().size(); i++) {
+					shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
+				}
+				pane.getChildren().addAll(shownPoints);
 			}
 			
 			//move selected shape
 			else if (tools.getSelectedToggle() == move) {
+				pane.getChildren().removeAll(shownPoints);
+				double xChange = selection[0].getCenterX() - e.getX();
+				double yChange = selection[0].getCenterY() - e.getY();
 				Line line = new Line(selection[0].getCenterX(), selection[0].getCenterY(), e.getX(), e.getY());
 				line.setOpacity(0);
 				pane.getChildren().add(line);
@@ -79,6 +94,14 @@ public class Display extends Application {
 				selection[0].setCenterX(e.getX());
 				selection[0].setCenterY(e.getY());
 				pane.getChildren().remove(line);
+				selection[0].setShownPoints(getSelectedPoints(selection[0]));
+				shownPoints.clear();
+				for (int i = 0; i < selection[0].getPointList().size(); i++) {
+					selection[0].getPointList().get(i).setPointX(selection[0].getPointList().get(i).getPointX() - xChange);
+					selection[0].getPointList().get(i).setPointY(selection[0].getPointList().get(i).getPointY() - yChange);
+					shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
+				}
+				pane.getChildren().addAll(shownPoints);
 			}
 			
 			// resize selected shape
@@ -125,5 +148,23 @@ public class Display extends Application {
 		else {
 			newSelection.setStroke(Color.BLACK);
 		}
+	}
+	public double[] convertPoints(ObservableList<Double> observablePoints) {
+		double[] list = new double[observablePoints.size()];
+		for (int i = 0; i < observablePoints.size(); i++) {
+			list[i] = observablePoints.get(i);
+		}
+		return list;
+	}
+	public ArrayList<Circle> getSelectedPoints(Shape shape) {
+		double[] points = shape.getPointsDouble();
+		ArrayList<Circle> pointList = new ArrayList<Circle>();
+		for (int i = 0; i < points.length; i++) {
+			double x = points[i];
+			double y = points[i + 1];
+			pointList.add(new Circle(x, y, 4));
+			i++;
+		}
+		return pointList;
 	}
 }
