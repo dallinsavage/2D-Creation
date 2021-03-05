@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
@@ -7,7 +6,6 @@ import javafx.scene.shape.Polygon;
 public class Shape extends Polygon{
 	private double centerX;
 	private double centerY;
-	private boolean selected;
 	private double[] points;
 	private ArrayList<Circle> shownPoints = new ArrayList<Circle>();
 	private ArrayList<Point> pointList = new ArrayList<Point>();
@@ -51,14 +49,7 @@ public class Shape extends Polygon{
 	public double[] getPointsDouble() {
 		return points;
 	}
-	public boolean getSelected() {
-		return selected;
-	}
-	public void setSelected(boolean select) {
-		selected = select;
-	}
 	public void deselect() {
-		setSelected(false);
 		setStroke(this.getFill());
 	}
 	public double[] convertPoints() {

@@ -20,6 +20,7 @@ public class Display extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		Shape[] selection = new Shape[1];
+		Point[] pointSelection = new Point[1];
 		ArrayList<Shape> shapes = new ArrayList<Shape>();
 		ArrayList<Circle> shownPoints = new ArrayList<Circle>();
 		Pane pane = new Pane();
@@ -43,9 +44,11 @@ public class Display extends Application {
 		color.setToggleGroup(tools);
 		RadioButton resize = new RadioButton("Resize");
 		resize.setToggleGroup(tools);
+		RadioButton selectPoint = new RadioButton("Select Point");
+		selectPoint.setToggleGroup(tools);
 		RadioButton addPoint = new RadioButton("Add Point");
 		addPoint.setToggleGroup(tools);
-		vBox.getChildren().addAll(newShape, select, move, color, resize, addPoint);
+		vBox.getChildren().addAll(newShape, select, move, color, resize, selectPoint, addPoint);
 		pane.getChildren().add(vBox);
 		
 		//tool bar events
@@ -66,6 +69,7 @@ public class Display extends Application {
 				}
 				else {
 					selection[0].deselect();
+					pane.getChildren().removeAll(shownPoints);
 					shownPoints.clear();
 					for (int i = 0; i < selection[0].getPointList().size(); i++) {
 						shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
@@ -79,6 +83,19 @@ public class Display extends Application {
 					shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
 				}
 				pane.getChildren().addAll(shownPoints);
+			}
+			
+			// select point
+			if (tools.getSelectedToggle() == selectPoint) {
+				Point closest = selection[0].getPointList().get(0);
+				double clickX = e.getX();
+				double clickY = e.getY();
+				for (int i = 0; i < selection[0].getPointList().size(); i++) {
+					if (Math.abs(selection[0].getPointList().get(i).getPointX() - clickX) < Math.abs(closest.getPointX() - clickX) &&
+							Math.abs(selection[0].getPointList().get(i).getPointY() - clickY) < Math.abs(closest.getPointY() - clickY)) {
+						closest = selection[0].getPointList().get(i);
+					}
+				}
 			}
 			
 			//move selected shape
@@ -106,8 +123,14 @@ public class Display extends Application {
 			
 			// resize selected shape
 			else if (tools.getSelectedToggle() == resize) {
-				selection[0].setScaleX(Math.abs(selection[0].getCenterX() - e.getX()) / 50);
-				selection[0].setScaleY(Math.abs(selection[0].getCenterY() - e.getY()) / 50);
+				pane.getChildren().removeAll(shownPoints);
+				shownPoints.clear();
+				for (int i = 0; i < selection[0].getPointList().size(); i++) {
+					selection[0].getPointList().get(i).setPointX(selection[0].getPointList().get(i).getPointX() + (selection[0].getCenterX() - e.getX()));
+					selection[0].getPointList().get(i).setPointY(selection[0].getPointList().get(i).getPointY() + (selection[0].getCenterY() - e.getY()));
+					shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
+				}
+				pane.getChildren().addAll(shownPoints);
 			}
 		});
 		
@@ -136,12 +159,10 @@ public class Display extends Application {
 			}
 		});
 	}
-	
 	public static void main(String[] args) {
 		launch(args);
 	}
 	public void select(Shape newSelection) {
-		newSelection.setSelected(true);
 		if (newSelection.getFill() == Color.BLACK) {
 			newSelection.setStroke(Color.RED);
 		}
