@@ -20,6 +20,7 @@ public class Display extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		Shape[] selection = new Shape[1];
 		Point[] pointSelection = new Point[1];
+		int[] selectedPointIndex = new int[1];
 		ArrayList<Shape> shapes = new ArrayList<Shape>();
 		ArrayList<Circle> shownPoints = new ArrayList<Circle>();
 		Pane pane = new Pane();
@@ -45,9 +46,11 @@ public class Display extends Application {
 		resize.setToggleGroup(tools);
 		RadioButton selectPoint = new RadioButton("Select Point");
 		selectPoint.setToggleGroup(tools);
+		RadioButton movePoint = new RadioButton("Move Point");
+		movePoint.setToggleGroup(tools);
 		RadioButton addPoint = new RadioButton("Add Point");
 		addPoint.setToggleGroup(tools);
-		vBox.getChildren().addAll(newShape, select, move, color, resize, selectPoint, addPoint);
+		vBox.getChildren().addAll(newShape, select, move, color, resize, selectPoint, movePoint, addPoint);
 		pane.getChildren().add(vBox);
 		
 		//tool bar events
@@ -55,12 +58,16 @@ public class Display extends Application {
 			
 			// select shape
 			if (tools.getSelectedToggle() == select) {
+				if (pointSelection[0] != null) {
+					shownPoints.get(selectedPointIndex[0]).setFill(Color.BLACK);
+					pointSelection[0] = null;
+				}
 				Shape closest = shapes.get(0);
 				double clickX = e.getX();
 				double clickY = e.getY();
 				for (int i = 0; i < shapes.size(); i++) {
-					if (Math.abs(shapes.get(i).getCenterX() - clickX) < Math.abs(closest.getCenterX() - clickX) &&
-							Math.abs(shapes.get(i).getCenterY() - clickY) < Math.abs(closest.getCenterY() - clickY)) {
+					if (Math.abs(shapes.get(i).getCenterX() - clickX) <= Math.abs(closest.getCenterX() - clickX) &&
+							Math.abs(shapes.get(i).getCenterY() - clickY) <= Math.abs(closest.getCenterY() - clickY)) {
 						closest = shapes.get(i);
 					}
 				}
@@ -86,15 +93,43 @@ public class Display extends Application {
 			
 			// select point
 			if (tools.getSelectedToggle() == selectPoint) {
+				if (pointSelection[0] != null) {
+					shownPoints.get(selectedPointIndex[0]).setFill(Color.BLACK);;
+				}
 				Point closest = selection[0].getPointList().get(0);
 				double clickX = e.getX();
 				double clickY = e.getY();
 				for (int i = 0; i < selection[0].getPointList().size(); i++) {
-					if (Math.abs(selection[0].getPointList().get(i).getPointX() - clickX) < Math.abs(closest.getPointX() - clickX) &&
-							Math.abs(selection[0].getPointList().get(i).getPointY() - clickY) < Math.abs(closest.getPointY() - clickY)) {
+					if (Math.abs(selection[0].getPointList().get(i).getPointX() - clickX) <= Math.abs(closest.getPointX() - clickX) && 
+							Math.abs(shownPoints.get(i).getCenterY() - clickY) <= Math.abs(closest.getPointY() - clickY)) {
 						closest = selection[0].getPointList().get(i);
+						System.out.println(closest.getPointX() + " " + closest.getPointY());
+						System.out.println(clickX + "." + clickY);
 					}
 				}
+				selectedPointIndex[0] = selection[0].getPointList().indexOf(closest);
+				pointSelection[0] = closest;
+				shownPoints.get(selectedPointIndex[0]).setFill(Color.RED);
+			}
+			
+			// move point
+			if (tools.getSelectedToggle() == movePoint) {
+				pointSelection[0].setPointX(e.getX());
+				pointSelection[0].setPointY(e.getY());
+				pane.getChildren().removeAll(shapes);
+				shapes.remove(selection[0]);
+				double[] doublePoints = convertPoints(selection[0].getPointList());
+				selection[0] = new Shape(selection[0].getCenterX(), selection[0].getCenterY(), doublePoints);
+				select(selection[0]);
+				shapes.add(selection[0]);
+				pane.getChildren().addAll(shapes);
+				shownPoints.clear();
+				for (int i = 0; i < selection[0].getPointList().size(); i++) {
+					selection[0].getPointList().get(i).setPointX(selection[0].getPointList().get(i).getPointX() - (selection[0].getCenterX() - e.getX()));
+					selection[0].getPointList().get(i).setPointY(selection[0].getPointList().get(i).getPointY() - (selection[0].getCenterY() - e.getY()));
+					shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
+				}
+				pane.getChildren().addAll(shownPoints);
 			}
 			
 			//move selected shape
