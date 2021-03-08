@@ -103,8 +103,6 @@ public class Display extends Application {
 					if (Math.abs(selection[0].getPointList().get(i).getPointX() - clickX) <= Math.abs(closest.getPointX() - clickX) && 
 							Math.abs(shownPoints.get(i).getCenterY() - clickY) <= Math.abs(closest.getPointY() - clickY)) {
 						closest = selection[0].getPointList().get(i);
-						System.out.println(closest.getPointX() + " " + closest.getPointY());
-						System.out.println(clickX + "." + clickY);
 					}
 				}
 				selectedPointIndex[0] = selection[0].getPointList().indexOf(closest);
@@ -123,10 +121,21 @@ public class Display extends Application {
 				select(selection[0]);
 				shapes.add(selection[0]);
 				pane.getChildren().addAll(shapes);
+				pane.getChildren().removeAll(shownPoints);
 				shownPoints.clear();
+				if (selection[0].getPointList().get(selectedPointIndex[0]).getPointX() < selection[0].getCenterX()) {
+					selection[0].getPointList().get(selectedPointIndex[0]).setPointX(selection[0].getPointList().get(selectedPointIndex[0]).getPointX() - (selection[0].getPointList().get(selectedPointIndex[0]).getPointX() - e.getX()));
+				}
+				else {
+					selection[0].getPointList().get(selectedPointIndex[0]).setPointX(selection[0].getPointList().get(selectedPointIndex[0]).getPointX() + (selection[0].getPointList().get(selectedPointIndex[0]).getPointX() - e.getX()));
+				}
+				if (selection[0].getPointList().get(selectedPointIndex[0]).getPointY() < selection[0].getCenterY()) {
+					selection[0].getPointList().get(selectedPointIndex[0]).setPointY(selection[0].getPointList().get(selectedPointIndex[0]).getPointY() - (selection[0].getPointList().get(selectedPointIndex[0]).getPointY() - e.getY()));
+				}
+				else {
+					selection[0].getPointList().get(selectedPointIndex[0]).setPointY(selection[0].getPointList().get(selectedPointIndex[0]).getPointY() + (selection[0].getPointList().get(selectedPointIndex[0]).getPointY() - e.getY()));
+				}
 				for (int i = 0; i < selection[0].getPointList().size(); i++) {
-					selection[0].getPointList().get(i).setPointX(selection[0].getPointList().get(i).getPointX() - (selection[0].getCenterX() - e.getX()));
-					selection[0].getPointList().get(i).setPointY(selection[0].getPointList().get(i).getPointY() - (selection[0].getCenterY() - e.getY()));
 					shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
 				}
 				pane.getChildren().addAll(shownPoints);
@@ -150,7 +159,9 @@ public class Display extends Application {
 					selection[0].getPointList().get(i).setPointX(selection[0].getPointList().get(i).getPointX() - xChange);
 					selection[0].getPointList().get(i).setPointY(selection[0].getPointList().get(i).getPointY() - yChange);
 					shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
+					System.out.print(selection[0].getPointList().get(i).getPointX() + "," + selection[0].getPointList().get(i).getPointY() + " ");
 				}
+				System.out.println(shownPoints);
 				pane.getChildren().addAll(shownPoints);
 			}
 			
