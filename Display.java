@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import javafx.animation.PathTransition;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -11,9 +10,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 public class Display extends Application {
 	@Override
@@ -143,25 +140,23 @@ public class Display extends Application {
 			
 			//move selected shape
 			else if (tools.getSelectedToggle() == move) {
-				pane.getChildren().removeAll(shownPoints);
+				pane.getChildren().clear();
+				pane.getChildren().addAll(vBox);
+				shapes.remove(selection[0]);
 				double xChange = selection[0].getCenterX() - e.getX();
 				double yChange = selection[0].getCenterY() - e.getY();
-				Line line = new Line(selection[0].getCenterX(), selection[0].getCenterY(), e.getX(), e.getY());
-				line.setOpacity(0);
-				pane.getChildren().add(line);
-				PathTransition pt = new PathTransition(Duration.millis(1), line, selection[0]);
-				pt.play();
 				selection[0].setCenterX(e.getX());
 				selection[0].setCenterY(e.getY());
-				pane.getChildren().remove(line);
 				shownPoints.clear();
 				for (int i = 0; i < selection[0].getPointList().size(); i++) {
 					selection[0].getPointList().get(i).setPointX(selection[0].getPointList().get(i).getPointX() - xChange);
 					selection[0].getPointList().get(i).setPointY(selection[0].getPointList().get(i).getPointY() - yChange);
 					shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
-					System.out.print(selection[0].getPointList().get(i).getPointX() + "," + selection[0].getPointList().get(i).getPointY() + " ");
 				}
-				System.out.println(shownPoints);
+				selection[0] = new Shape(selection[0].getCenterX(), selection[0].getCenterY(), convertPoints(selection[0].getPointList()));
+				select(selection[0]);
+				shapes.add(selection[0]);
+				pane.getChildren().addAll(shapes);
 				pane.getChildren().addAll(shownPoints);
 			}
 			
