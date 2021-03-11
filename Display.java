@@ -52,10 +52,10 @@ public class Display extends Application {
 		vBox.getChildren().addAll(newShape, deleteShape, select, move, color, resize, selectPoint, movePoint, deletePoint, addPoint);
 		pane.getChildren().add(vBox);
 		
-		//tool bar events
+	//tool bar events
 		pane.setOnMouseClicked(e -> {
 			
-			// select shape
+		// select shape
 			if (tools.getSelectedToggle() == select) {
 				if (pointSelection[0] != null) {
 					shownPoints.get(selectedPointIndex[0]).setFill(Color.BLACK);
@@ -90,7 +90,7 @@ public class Display extends Application {
 				pane.getChildren().addAll(shownPoints);
 			}
 			
-			// select point
+		// select point
 			if (tools.getSelectedToggle() == selectPoint) {
 				if (pointSelection[0] != null) {
 					shownPoints.get(selectedPointIndex[0]).setFill(Color.BLACK);;
@@ -100,7 +100,7 @@ public class Display extends Application {
 				double clickY = e.getY();
 				for (int i = 0; i < selection[0].getPointList().size(); i++) {
 					if (Math.abs(selection[0].getPointList().get(i).getPointX() - clickX) <= Math.abs(closest.getPointX() - clickX) && 
-							Math.abs(shownPoints.get(i).getCenterY() - clickY) <= Math.abs(closest.getPointY() - clickY)) {
+							Math.abs(selection[0].getPointList().get(i).getPointY() - clickY) <= Math.abs(closest.getPointY() - clickY)) {
 						closest = selection[0].getPointList().get(i);
 					}
 				}
@@ -109,10 +109,11 @@ public class Display extends Application {
 				shownPoints.get(selectedPointIndex[0]).setFill(Color.RED);
 			}
 			
-			// move point
+		// move point
 			if (tools.getSelectedToggle() == movePoint) {
 				pane.getChildren().clear();
 				pane.getChildren().add(vBox);
+				shownPoints.clear();
 				pointSelection[0].setPointX(e.getX());
 				pointSelection[0].setPointY(e.getY());
 				shapes.remove(selection[0]);
@@ -121,17 +122,40 @@ public class Display extends Application {
 				select(selection[0]);
 				shapes.add(selection[0]);
 				pane.getChildren().addAll(shapes);
-				shownPoints.clear();
-					selection[0].getPointList().get(selectedPointIndex[0]).setPointX(e.getX());
-					selection[0].getPointList().get(selectedPointIndex[0]).setPointY(e.getY());
 				for (int i = 0; i < selection[0].getPointList().size(); i++) {
 					shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
 				}
-				shownPoints.get(selectedPointIndex[0]).setFill(Color.RED);
 				pane.getChildren().addAll(shownPoints);
 			}
 			
-			//move selected shape
+		// add point
+			if (tools.getSelectedToggle() == addPoint) {
+				pane.getChildren().clear();
+				shownPoints.clear();
+				pane.getChildren().add(vBox);
+				shapes.remove(selection[0]);
+				Point closest = selection[0].getPointList().get(0);
+				double clickX = e.getX();
+				double clickY = e.getY();
+				for (int i = 0; i < selection[0].getPointList().size(); i++) {
+					if (Math.abs(selection[0].getPointList().get(i).getPointX() - clickX) <= Math.abs(closest.getPointX() - clickX) && 
+							Math.abs(selection[0].getPointList().get(i).getPointY() - clickY) <= Math.abs(closest.getPointY() - clickY)) {
+						closest = selection[0].getPointList().get(i);
+					}
+				}
+				int closestIndex = selection[0].getPointList().indexOf(closest);
+				selection[0].getPointList().add(closestIndex, new Point(clickX, clickY));
+				selection[0] = new Shape(selection[0].getCenterX(), selection[0].getCenterY(), convertPoints(selection[0].getPointList()));
+				shapes.add(selection[0]);
+				for (int i = 0; i < selection[0].getPointList().size(); i++) {
+					shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
+				}
+				select(selection[0]);
+				pane.getChildren().addAll(shapes);
+				pane.getChildren().addAll(shownPoints);
+			}
+			
+		//move selected shape
 			else if (tools.getSelectedToggle() == move) {
 				pane.getChildren().clear();
 				pane.getChildren().addAll(vBox);
@@ -182,14 +206,14 @@ public class Display extends Application {
 			} */
 		});
 		
-		//add new shape
+	//add new shape
 		newShape.setOnAction(e -> {
 			pane.getChildren().removeAll(shapes);
 			shapes.add((new Shape(375, 375)));
 			pane.getChildren().addAll(shapes);
 		});
 		
-		//delete selected shape
+	//delete selected shape
 		deleteShape.setOnAction(e -> {
 			pane.getChildren().removeAll(shapes);
 			shapes.remove(selection[0]);
@@ -197,17 +221,22 @@ public class Display extends Application {
 			pane.getChildren().removeAll(shownPoints);
 		});
 		
-		//delete selected point
+	//delete selected point
 		deletePoint.setOnAction(e -> {
+			pane.getChildren().clear();
+			pane.getChildren().add(vBox);
+			shownPoints.remove(selectedPointIndex[0]);
 			shapes.remove(selection[0]);
 			selection[0].getPointList().remove(pointSelection[0]);
 			selection[0] = new Shape(selection[0].getCenterX(), selection[0].getCenterY(), convertPoints(selection[0].getPointList()));
 			shapes.add(selection[0]);
 			pane.getChildren().addAll(shapes);
+			pane.getChildren().addAll(shownPoints);
 			pointSelection[0] = null;
+			select(selection[0]);
 		});
 		
-		//change selected shape color
+	//change selected shape color
 		color.setOnAction(e -> {
 			vBox.getChildren().addAll(newColor, entry, change);
 			});
