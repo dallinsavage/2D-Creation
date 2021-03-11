@@ -144,7 +144,24 @@ public class Display extends Application {
 					}
 				}
 				int closestIndex = selection[0].getPointList().indexOf(closest);
+				if (closestIndex == 0) {
+					if (Math.abs(selection[0].getPointList().get(closestIndex + 1).getPointX() - clickX) + Math.abs(selection[0].getPointList().get(closestIndex + 1).getPointY() - clickY)
+					< Math.abs(selection[0].getPointList().get(selection[0].getPointList().size() - 1).getPointX() - clickX) + Math.abs(selection[0].getPointList().get(selection[0].getPointList().size() - 1).getPointY() - clickY)) {
 				selection[0].getPointList().add(closestIndex, new Point(clickX, clickY));
+					}
+					else {
+						selection[0].getPointList().add(closestIndex - 1, new Point(clickX, clickY));
+					}
+				}
+				else if (closestIndex == selection[0].getPointList().size()) {
+					if (Math.abs(selection[0].getPointList().get().getPointX() - clickX) + Math.abs(selection[0].getPointList().get(closestIndex + 1).getPointY() - clickY)
+					< Math.abs(selection[0].getPointList().get(closestIndex - 1).getPointX() - clickX) + Math.abs(selection[0].getPointList().get(closestIndex - 1).getPointY() - clickY)) {
+				selection[0].getPointList().add(closestIndex, new Point(clickX, clickY));
+					}
+					else {
+						selection[0].getPointList().add(closestIndex - 1, new Point(clickX, clickY));
+					}
+				}
 				selection[0] = new Shape(selection[0].getCenterX(), selection[0].getCenterY(), convertPoints(selection[0].getPointList()));
 				shapes.add(selection[0]);
 				for (int i = 0; i < selection[0].getPointList().size(); i++) {
