@@ -10,6 +10,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 
 public class Display extends Application {
@@ -145,21 +146,63 @@ public class Display extends Application {
 				}
 				int closestIndex = selection[0].getPointList().indexOf(closest);
 				if (closestIndex == 0) {
-					if (Math.abs(selection[0].getPointList().get(closestIndex + 1).getPointX() - clickX) + Math.abs(selection[0].getPointList().get(closestIndex + 1).getPointY() - clickY)
-					< Math.abs(selection[0].getPointList().get(selection[0].getPointList().size() - 1).getPointX() - clickX) + Math.abs(selection[0].getPointList().get(selection[0].getPointList().size() - 1).getPointY() - clickY)) {
-				selection[0].getPointList().add(closestIndex, new Point(clickX, clickY));
+					Line line1 = new Line(clickX, clickY, selection[0].getPointList().get(selection[0].getPointList().size() - 1).getPointX(), selection[0].getPointList().get(selection[0].getPointList().size() - 1).getPointY());
+					Line line2 = new Line(selection[0].getPointList().get(closestIndex).getPointX(), selection[0].getPointList().get(closestIndex).getPointY(), 
+							selection[0].getPointList().get(closestIndex + 1).getPointX(), selection[0].getPointList().get(closestIndex + 1).getPointY());
+					Line line3 = new Line(clickX, clickY, selection[0].getPointList().get(selection[0].getPointList().size() - 2).getPointX(), selection[0].getPointList().get(selection[0].getPointList().size() - 2).getPointY());
+					if (line1.getBoundsInParent().intersects(line2.getBoundsInParent())) {
+						selection[0].getPointList().add(closestIndex + 1, new Point(clickX, clickY));
+					}
+					else if (line1.getBoundsInParent().intersects(line3.getBoundsInParent())) {
+						selection[0].getPointList().add(0, new Point(clickX, clickY));
 					}
 					else {
-						selection[0].getPointList().add(closestIndex - 1, new Point(clickX, clickY));
+						selection[0].getPointList().add(closestIndex, new Point(clickX, clickY));
 					}
 				}
-				else if (closestIndex == selection[0].getPointList().size()) {
-					if (Math.abs(selection[0].getPointList().get().getPointX() - clickX) + Math.abs(selection[0].getPointList().get(closestIndex + 1).getPointY() - clickY)
-					< Math.abs(selection[0].getPointList().get(closestIndex - 1).getPointX() - clickX) + Math.abs(selection[0].getPointList().get(closestIndex - 1).getPointY() - clickY)) {
-				selection[0].getPointList().add(closestIndex, new Point(clickX, clickY));
+				else if (closestIndex == selection[0].getPointList().size() - 1) {
+					Line line1 = new Line(clickX, clickY, selection[0].getPointList().get(closestIndex - 1).getPointX(), selection[0].getPointList().get(closestIndex - 1).getPointY());
+					Line line2 = new Line(selection[0].getPointList().get(closestIndex).getPointX(), selection[0].getPointList().get(closestIndex).getPointY(), 
+							selection[0].getPointList().get(0).getPointX(), selection[0].getPointList().get(0).getPointY());
+					Line line3 = new Line(clickX, clickY, selection[0].getPointList().get(closestIndex - 2).getPointX(), selection[0].getPointList().get(closestIndex - 2).getPointY());
+					if (line1.getBoundsInParent().intersects(line2.getBoundsInParent())) {
+						selection[0].getPointList().add(0, new Point(clickX, clickY));
+					}
+					else if (line1.getBoundsInParent().intersects(line3.getBoundsInParent())) {
+						selection[0].getPointList().add(closestIndex, new Point(clickX, clickY));
 					}
 					else {
-						selection[0].getPointList().add(closestIndex - 1, new Point(clickX, clickY));
+						selection[0].getPointList().add(closestIndex, new Point(clickX, clickY));
+					}
+				}
+				else if (closestIndex == 1) {
+					Line line1 = new Line(clickX, clickY, selection[0].getPointList().get(closestIndex - 1).getPointX(), selection[0].getPointList().get(closestIndex - 1).getPointY());
+					Line line2 = new Line(selection[0].getPointList().get(closestIndex).getPointX(), selection[0].getPointList().get(closestIndex).getPointY(), 
+							selection[0].getPointList().get(closestIndex + 1).getPointX(), selection[0].getPointList().get(closestIndex + 1).getPointY());
+					Line line3 = new Line(clickX, clickY, selection[0].getPointList().get(selection[0].getPointList().size() - 1).getPointX(), selection[0].getPointList().get(selection[0].getPointList().size() - 1).getPointY());
+					if (line1.getBoundsInParent().intersects(line2.getBoundsInParent())) {
+						selection[0].getPointList().add(closestIndex + 1, new Point(clickX, clickY));
+					}
+					else if (line1.getBoundsInParent().intersects(line3.getBoundsInParent())) {
+						selection[0].getPointList().add(0, new Point(clickX, clickY));
+					}
+					else {
+						selection[0].getPointList().add(closestIndex, new Point(clickX, clickY));
+					}
+				}
+				else {
+					Line line1 = new Line(clickX, clickY, selection[0].getPointList().get(closestIndex - 1).getPointX(), selection[0].getPointList().get(closestIndex - 1).getPointY());
+					Line line2 = new Line(selection[0].getPointList().get(closestIndex).getPointX(), selection[0].getPointList().get(closestIndex).getPointY(), 
+							selection[0].getPointList().get(closestIndex + 1).getPointX(), selection[0].getPointList().get(closestIndex + 1).getPointY());
+					Line line3 = new Line(clickX, clickY, selection[0].getPointList().get(selection[0].getPointList().size() - 2).getPointX(), selection[0].getPointList().get(selection[0].getPointList().size() - 2).getPointY());
+					if (line1.getBoundsInParent().intersects(line2.getBoundsInParent())) {
+						selection[0].getPointList().add(closestIndex + 1, new Point(clickX, clickY));
+					}
+					else if (line1.getBoundsInParent().intersects(line3.getBoundsInParent())) {
+						selection[0].getPointList().add(0, new Point(clickX, clickY));
+					}
+					else {
+						selection[0].getPointList().add(closestIndex, new Point(clickX, clickY));
 					}
 				}
 				selection[0] = new Shape(selection[0].getCenterX(), selection[0].getCenterY(), convertPoints(selection[0].getPointList()));
