@@ -266,33 +266,36 @@ public class Display extends Application {
 				}
 			}
 			
-			// resize selected shape
-		/*	else if (tools.getSelectedToggle() == resize) {
-				pane.getChildren().removeAll(shownPoints);
+		// resize selected shape
+			else if (tools.getSelectedToggle() == resize) {
+				pane.getChildren().clear();
+				pane.getChildren().add(vBox);
 				shownPoints.clear();
+				shapes.remove(selection[0]);
+				Point closest = selection[0].getPointList().get(0);
+				double clickX = e.getX();
+				double clickY = e.getY();
+				double changeX = Math.abs(closest.getPointX() - clickX);
+				double changeY = Math.abs(closest.getPointY() - clickY);
 				for (int i = 0; i < selection[0].getPointList().size(); i++) {
-					if (selection[0].getPointList().get(i).getPointX() < selection[0].getCenterX()) {
-						selection[0].getPointList().get(i).setPointX(selection[0].getPointList().get(i).getPointX() * (Math.abs(selection[0].getCenterX() - e.getX()) / 50));
+					if (Math.abs(selection[0].getPointList().get(i).getPointX() - clickX) <= Math.abs(closest.getPointX() - clickX) && 
+							Math.abs(selection[0].getPointList().get(i).getPointY() - clickY) <= Math.abs(closest.getPointY() - clickY)) {
+						closest = selection[0].getPointList().get(i);
 					}
-					else {
-						selection[0].getPointList().get(i).setPointX(selection[0].getPointList().get(i).getPointX() * (Math.abs(selection[0].getCenterX() - e.getX()) / 50));
-					}
-					if (selection[0].getPointList().get(i).getPointY() < selection[0].getCenterY()) {
-						selection[0].getPointList().get(i).setPointY(selection[0].getPointList().get(i).getPointY() * (Math.abs(selection[0].getCenterX() - e.getX()) / 50));
-					}
-					else {
-						selection[0].getPointList().get(i).setPointY(selection[0].getPointList().get(i).getPointY() * (Math.abs(selection[0].getCenterX() - e.getX()) / 50));
-					}
+				}
+				for (int i = 0; i < selection[0].getPointList().size(); i++) {
+					double[] slope = getSlope(selection[0].getPointList().get(i), selection[0].getCenterX(), selection[0].getCenterY());
+					System.out.println(selection[0].getPointList().get(i).getPointX() + "," + selection[0].getPointList().get(i).getPointY());
+					selection[0].getPointList().get(i).setPointX(selection[0].getPointList().get(i).getPointX() + (slope[0] * changeX));
+					selection[0].getPointList().get(i).setPointY(selection[0].getPointList().get(i).getPointY() + (slope[1] * changeY));
+					System.out.println("new " + selection[0].getPointList().get(i).getPointX() + "," + selection[0].getPointList().get(i).getPointY());
+				}
+				for (int i = 0; i < selection[0].getPointList().size(); i++) {
 					shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
 				}
-				pane.getChildren().removeAll(shapes);
-				double[] doublePoints = convertPoints(selection[0].getPointList());
-				selection[0] = new Shape(selection[0].getCenterX(), selection[0].getCenterY(), doublePoints);
-				select(selection[0]);
 				shapes.add(selection[0]);
 				pane.getChildren().addAll(shapes);
-				pane.getChildren().addAll(shownPoints);
-			} */
+			}
 		});
 		
 	//add new shape
