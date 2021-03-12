@@ -1,4 +1,3 @@
-
 import javafx.scene.shape.Circle;
 
 public class Point {
