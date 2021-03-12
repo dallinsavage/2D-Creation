@@ -1,5 +1,8 @@
 import java.util.ArrayList;
+import javafx.animation.FadeTransition;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -12,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class Display extends Application {
 	@Override
@@ -93,40 +97,53 @@ public class Display extends Application {
 			
 		// select point
 			if (tools.getSelectedToggle() == selectPoint) {
-				if (pointSelection[0] != null) {
-					shownPoints.get(selectedPointIndex[0]).setFill(Color.BLACK);;
-				}
-				Point closest = selection[0].getPointList().get(0);
-				double clickX = e.getX();
-				double clickY = e.getY();
-				for (int i = 0; i < selection[0].getPointList().size(); i++) {
-					if (Math.abs(selection[0].getPointList().get(i).getPointX() - clickX) <= Math.abs(closest.getPointX() - clickX) && 
-							Math.abs(selection[0].getPointList().get(i).getPointY() - clickY) <= Math.abs(closest.getPointY() - clickY)) {
-						closest = selection[0].getPointList().get(i);
+				try {
+					if (pointSelection[0] != null) {
+						shownPoints.get(selectedPointIndex[0]).setFill(Color.BLACK);;
 					}
+					Point closest = selection[0].getPointList().get(0);
+					double clickX = e.getX();
+					double clickY = e.getY();
+					for (int i = 0; i < selection[0].getPointList().size(); i++) {
+						if (Math.abs(selection[0].getPointList().get(i).getPointX() - clickX) <= Math.abs(closest.getPointX() - clickX) && 
+								Math.abs(selection[0].getPointList().get(i).getPointY() - clickY) <= Math.abs(closest.getPointY() - clickY)) {
+							closest = selection[0].getPointList().get(i);
+						}
+					}
+					selectedPointIndex[0] = selection[0].getPointList().indexOf(closest);
+					pointSelection[0] = closest;
+					shownPoints.get(selectedPointIndex[0]).setFill(Color.RED);
 				}
-				selectedPointIndex[0] = selection[0].getPointList().indexOf(closest);
-				pointSelection[0] = closest;
-				shownPoints.get(selectedPointIndex[0]).setFill(Color.RED);
+				catch (Exception ex) {
+					message(pane, "select a shape");
+				}
+				
 			}
 			
 		// move point
 			if (tools.getSelectedToggle() == movePoint) {
-				pane.getChildren().clear();
-				pane.getChildren().add(vBox);
-				shownPoints.clear();
-				pointSelection[0].setPointX(e.getX());
-				pointSelection[0].setPointY(e.getY());
-				shapes.remove(selection[0]);
-				double[] doublePoints = convertPoints(selection[0].getPointList());
-				selection[0] = new Shape(selection[0].getCenterX(), selection[0].getCenterY(), doublePoints);
-				select(selection[0]);
-				shapes.add(selection[0]);
-				pane.getChildren().addAll(shapes);
-				for (int i = 0; i < selection[0].getPointList().size(); i++) {
-					shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
+				try {
+					pane.getChildren().clear();
+					pane.getChildren().add(vBox);
+					pointSelection[0].setPointX(e.getX());
+					pointSelection[0].setPointY(e.getY());
+					shapes.remove(selection[0]);
+					double[] doublePoints = convertPoints(selection[0].getPointList());
+					selection[0] = new Shape(selection[0].getCenterX(), selection[0].getCenterY(), doublePoints);
+					select(selection[0]);
+					shapes.add(selection[0]);
+					pane.getChildren().addAll(shapes);
+					shownPoints.clear();
+					for (int i = 0; i < selection[0].getPointList().size(); i++) {
+						shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
+					}
+					pane.getChildren().addAll(shownPoints);
 				}
-				pane.getChildren().addAll(shownPoints);
+				catch (Exception ex) {
+					message(pane, "select a point");
+					pane.getChildren().addAll(shapes);
+					pane.getChildren().addAll(shownPoints);
+				}
 			}
 			
 		// add point
@@ -217,24 +234,30 @@ public class Display extends Application {
 			
 		//move selected shape
 			else if (tools.getSelectedToggle() == move) {
-				pane.getChildren().clear();
-				pane.getChildren().addAll(vBox);
-				shapes.remove(selection[0]);
-				double xChange = selection[0].getCenterX() - e.getX();
-				double yChange = selection[0].getCenterY() - e.getY();
-				selection[0].setCenterX(e.getX());
-				selection[0].setCenterY(e.getY());
-				shownPoints.clear();
-				for (int i = 0; i < selection[0].getPointList().size(); i++) {
-					selection[0].getPointList().get(i).setPointX(selection[0].getPointList().get(i).getPointX() - xChange);
-					selection[0].getPointList().get(i).setPointY(selection[0].getPointList().get(i).getPointY() - yChange);
-					shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
+				try {
+					pane.getChildren().clear();
+					pane.getChildren().addAll(vBox);
+					shapes.remove(selection[0]);
+					double xChange = selection[0].getCenterX() - e.getX();
+					double yChange = selection[0].getCenterY() - e.getY();
+					selection[0].setCenterX(e.getX());
+					selection[0].setCenterY(e.getY());
+					shownPoints.clear();
+					for (int i = 0; i < selection[0].getPointList().size(); i++) {
+						selection[0].getPointList().get(i).setPointX(selection[0].getPointList().get(i).getPointX() - xChange);
+						selection[0].getPointList().get(i).setPointY(selection[0].getPointList().get(i).getPointY() - yChange);
+						shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
+					}
+					selection[0] = new Shape(selection[0].getCenterX(), selection[0].getCenterY(), convertPoints(selection[0].getPointList()));
+					select(selection[0]);
+					shapes.add(selection[0]);
+					pane.getChildren().addAll(shapes);
+					pane.getChildren().addAll(shownPoints);
 				}
-				selection[0] = new Shape(selection[0].getCenterX(), selection[0].getCenterY(), convertPoints(selection[0].getPointList()));
-				select(selection[0]);
-				shapes.add(selection[0]);
-				pane.getChildren().addAll(shapes);
-				pane.getChildren().addAll(shownPoints);
+				catch (Exception ex) {
+					message(pane, "select a shape");
+					pane.getChildren().addAll(shapes);
+				}
 			}
 			
 			// resize selected shape
@@ -283,17 +306,23 @@ public class Display extends Application {
 		
 	//delete selected point
 		deletePoint.setOnAction(e -> {
-			pane.getChildren().clear();
-			pane.getChildren().add(vBox);
-			shownPoints.remove(selectedPointIndex[0]);
-			shapes.remove(selection[0]);
-			selection[0].getPointList().remove(pointSelection[0]);
-			selection[0] = new Shape(selection[0].getCenterX(), selection[0].getCenterY(), convertPoints(selection[0].getPointList()));
-			shapes.add(selection[0]);
-			pane.getChildren().addAll(shapes);
-			pane.getChildren().addAll(shownPoints);
-			pointSelection[0] = null;
-			select(selection[0]);
+			try {
+				pane.getChildren().clear();
+				pane.getChildren().add(vBox);
+				shownPoints.remove(selectedPointIndex[0]);
+				shapes.remove(selection[0]);
+				selection[0].getPointList().remove(pointSelection[0]);
+				selection[0] = new Shape(selection[0].getCenterX(), selection[0].getCenterY(), convertPoints(selection[0].getPointList()));
+				shapes.add(selection[0]);
+				pane.getChildren().addAll(shapes);
+				pane.getChildren().addAll(shownPoints);
+				pointSelection[0] = null;
+				select(selection[0]);
+			}
+			catch (Exception ex) {
+				message(pane, "select a point");
+				pane.getChildren().addAll(shapes);
+			}
 		});
 		
 	//change selected shape color
@@ -333,5 +362,24 @@ public class Display extends Application {
 			i++;
 		}
 		return list;
+	}
+	public void message(Pane pane, String message) {
+		Label label = new Label();
+		Pane labelPane = new Pane(label);
+		label.setTextFill(Color.BLUE);
+		pane.getChildren().add(labelPane);
+		labelPane.setLayoutY(720);
+		labelPane.setLayoutX(10);
+		label.setText(message);
+		FadeTransition ft = new FadeTransition(Duration.seconds(1.0), label);
+		ft.setFromValue(1.0);
+		ft.setToValue(0);
+		ft.play();
+		ft.setOnFinished(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				pane.getChildren().remove(labelPane);
+			}
+		});
 	}
 }
