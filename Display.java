@@ -129,7 +129,10 @@ public class Display extends Application {
 					pointSelection[0].setPointY(e.getY());
 					shapes.remove(selection[0]);
 					double[] doublePoints = convertPoints(selection[0].getPointList());
+					Color c = Color.BLACK;
+					c = (Color) selection[0].getFill();
 					selection[0] = new Shape(selection[0].getCenterX(), selection[0].getCenterY(), doublePoints);
+					selection[0].setFill(c);
 					select(selection[0]);
 					shapes.add(selection[0]);
 					pane.getChildren().addAll(shapes);
@@ -149,6 +152,8 @@ public class Display extends Application {
 		// add point
 			if (tools.getSelectedToggle() == addPoint) {
 				try {
+					Color c = Color.BLACK;
+					c = (Color) selection[0].getFill();
 					pane.getChildren().clear();
 					shownPoints.clear();
 					pane.getChildren().add(vBox);
@@ -228,6 +233,7 @@ public class Display extends Application {
 					for (int i = 0; i < selection[0].getPointList().size(); i++) {
 						shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
 					}
+					selection[0].setFill(c);
 					select(selection[0]);
 					pane.getChildren().addAll(shapes);
 					pane.getChildren().addAll(shownPoints);
@@ -254,7 +260,10 @@ public class Display extends Application {
 						selection[0].getPointList().get(i).setPointY(selection[0].getPointList().get(i).getPointY() - yChange);
 						shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
 					}
+					Color c = Color.BLACK;
+					c = (Color) selection[0].getFill();
 					selection[0] = new Shape(selection[0].getCenterX(), selection[0].getCenterY(), convertPoints(selection[0].getPointList()));
+					selection[0].setFill(c);
 					select(selection[0]);
 					shapes.add(selection[0]);
 					pane.getChildren().addAll(shapes);
@@ -322,7 +331,10 @@ public class Display extends Application {
 				shownPoints.remove(selectedPointIndex[0]);
 				shapes.remove(selection[0]);
 				selection[0].getPointList().remove(pointSelection[0]);
+				Color c = Color.BLACK;
+				c = (Color) selection[0].getFill();
 				selection[0] = new Shape(selection[0].getCenterX(), selection[0].getCenterY(), convertPoints(selection[0].getPointList()));
+				selection[0].setFill(c);
 				shapes.add(selection[0]);
 				pane.getChildren().addAll(shapes);
 				pane.getChildren().addAll(shownPoints);
@@ -340,16 +352,21 @@ public class Display extends Application {
 			vBox.getChildren().addAll(newColor, entry, change);
 			});
 		change.setOnAction(e -> {
-			String entryColor = entry.getText();
-			Color c = Color.web(entryColor);
-			selection[0].setFill(c);
-			vBox.getChildren().removeAll(newColor, entry, change);
-			color.setSelected(false);
-			if ( c == Color.BLACK) {
-				selection[0].setStroke(Color.RED);
+			try {
+				String entryColor = entry.getText();
+				Color c = Color.web(entryColor);
+				selection[0].setFill(c);
+				vBox.getChildren().removeAll(newColor, entry, change);
+				color.setSelected(false);
+				if ( c == Color.BLACK) {
+					selection[0].setStroke(Color.RED);
+				}
+				else {
+					selection[0].setStroke(Color.BLACK);
+				}
 			}
-			else {
-				selection[0].setStroke(Color.BLACK);
+			catch (Exception ex) {
+				message(pane, "select a shape");
 			}
 		});
 	}
