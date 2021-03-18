@@ -1,13 +1,10 @@
 import java.util.ArrayList;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 
 public class Shape extends Polygon{
 	private double centerX;
 	private double centerY;
-	private double[] points;
-	private ArrayList<Circle> shownPoints = new ArrayList<Circle>();
 	private ArrayList<Point> pointList = new ArrayList<Point>();
 	Shape() {
 		super();
@@ -20,8 +17,6 @@ public class Shape extends Polygon{
 		pointList.add(new Point(newCenterX + 50, newCenterY - 50));
 		pointList.add(new Point(newCenterX + 50, newCenterY + 50));
 		pointList.add(new Point(newCenterX - 50, newCenterY + 50));
-		points = this.convertPoints();
-		shownPoints = getSelectedPoints(this);
 		centerX = newCenterX;
 		centerY = newCenterY;
 	}
@@ -29,10 +24,14 @@ public class Shape extends Polygon{
 		super(newPoints);
 		this.setStrokeWidth(2);
 		this.setStroke(Color.BLACK);
-		points = this.convertPoints();
-		shownPoints = getSelectedPoints(this);
 		centerX = newCenterX;
 		centerY = newCenterY;
+		for (int i = 0; i < newPoints.length; i++) {
+			double x = newPoints[i];
+			double y = newPoints[i + 1];
+			pointList.add(new Point(x, y));
+			i++;
+		}
 	}
 	public double getCenterX() {
 		return centerX;
@@ -46,41 +45,8 @@ public class Shape extends Polygon{
 	public void setCenterY(double newCenterY) {
 		centerY = newCenterY;
 	}
-	public double[] getPointsDouble() {
-		return points;
-	}
 	public void deselect() {
 		setStroke(this.getFill());
-	}
-	public double[] convertPoints() {
-		double[] list = new double[this.getPoints().size()];
-		for (int i = 0; i < this.getPoints().size(); i++) {
-			list[i] = this.getPoints().get(i);
-		}
-		return list;
-	}
-	public ArrayList<Circle> getSelectedPoints(Shape shape) {
-		double[] points = shape.getPointsDouble();
-		ArrayList<Circle> pointList = new ArrayList<Circle>();
-		for (int i = 0; i < points.length; i++) {
-			double x = points[i];
-			double y = points[i + 1];
-			pointList.add(new Circle(x, y, 4));
-			i++;
-		}
-		return pointList;
-	}
-	public void setShownPoints(ArrayList list) {
-		shownPoints = list;
-	}
-	public ArrayList<Circle> getShownPoints() {
-		ArrayList<Circle> circleArray = new ArrayList<Circle>();
-		ArrayList<Point> points = this.getPointList();
-		for (int i = 0; i < points.size(); i++) {
-			circleArray.add(new Circle(points.get(i).getPointX(), points.get(i).getPointY(), 4));
-		}
-		this.setShownPoints(circleArray);
-		return shownPoints;
 	}
 	public ArrayList<Point> getPointList() {
 		return pointList;
