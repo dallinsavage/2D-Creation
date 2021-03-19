@@ -37,7 +37,7 @@ public class Display extends Application {
 		Button change = new Button("Change");
 		ToggleGroup tools = new ToggleGroup();
 		VBox vBox = new VBox();
-		Button newShape = new Button("New Shape");
+		Button newShape = new Button("  New Shape  ");
 		Button deleteShape = new Button("Delete Shape");
 		RadioButton select = new RadioButton("Select");
 		select.setToggleGroup(tools);
@@ -45,16 +45,14 @@ public class Display extends Application {
 		move.setToggleGroup(tools);
 		RadioButton color = new RadioButton("Change Color");
 		color.setToggleGroup(tools);
-		RadioButton resize = new RadioButton("Resize");
-		resize.setToggleGroup(tools);
 		RadioButton selectPoint = new RadioButton("Select Point");
 		selectPoint.setToggleGroup(tools);
 		RadioButton movePoint = new RadioButton("Move Point");
 		movePoint.setToggleGroup(tools);
-		Button deletePoint = new Button("Delete Point");
+		Button deletePoint = new Button(" Delete Point  ");
 		RadioButton addPoint = new RadioButton("Add Point");
 		addPoint.setToggleGroup(tools);
-		vBox.getChildren().addAll(newShape, deleteShape, select, move, color, resize, selectPoint, movePoint, deletePoint, addPoint);
+		vBox.getChildren().addAll(select, move, color, selectPoint, movePoint, addPoint, deletePoint, newShape, deleteShape);
 		pane.getChildren().add(vBox);
 		
 	//tool bar events
@@ -274,37 +272,6 @@ public class Display extends Application {
 					pane.getChildren().addAll(shapes);
 				}
 			}
-			
-		// resize selected shape
-			else if (tools.getSelectedToggle() == resize) {
-				pane.getChildren().clear();
-				pane.getChildren().add(vBox);
-				shownPoints.clear();
-				shapes.remove(selection[0]);
-				Point closest = selection[0].getPointList().get(0);
-				double clickX = e.getX();
-				double clickY = e.getY();
-				double changeX = Math.abs(closest.getPointX() - clickX);
-				double changeY = Math.abs(closest.getPointY() - clickY);
-				for (int i = 0; i < selection[0].getPointList().size(); i++) {
-					if (Math.abs(selection[0].getPointList().get(i).getPointX() - clickX) <= Math.abs(closest.getPointX() - clickX) && 
-							Math.abs(selection[0].getPointList().get(i).getPointY() - clickY) <= Math.abs(closest.getPointY() - clickY)) {
-						closest = selection[0].getPointList().get(i);
-					}
-				}
-				for (int i = 0; i < selection[0].getPointList().size(); i++) {
-					double[] slope = getSlope(selection[0].getPointList().get(i), selection[0].getCenterX(), selection[0].getCenterY());
-					System.out.println(selection[0].getPointList().get(i).getPointX() + "," + selection[0].getPointList().get(i).getPointY());
-					selection[0].getPointList().get(i).setPointX(selection[0].getPointList().get(i).getPointX() + (slope[0] * changeX));
-					selection[0].getPointList().get(i).setPointY(selection[0].getPointList().get(i).getPointY() + (slope[1] * changeY));
-					System.out.println("new " + selection[0].getPointList().get(i).getPointX() + "," + selection[0].getPointList().get(i).getPointY());
-				}
-				for (int i = 0; i < selection[0].getPointList().size(); i++) {
-					shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
-				}
-				shapes.add(selection[0]);
-				pane.getChildren().addAll(shapes);
-			}
 		});
 		
 	//add new shape
@@ -408,19 +375,5 @@ public class Display extends Application {
 				pane.getChildren().remove(labelPane);
 			}
 		});
-	}
-	public double[] getSlope(Point point, double centerX, double centerY) {
-		double[] slope = new double[2];
-		double x = point.getPointX() - centerX;
-		double y  = point.getPointY() - centerY;
-		if (x < 0 && y < 0) {
-			slope[0] = Math.abs(x);
-			slope[1] = Math.abs(y);
-		}
-		else {
-			slope[0] = x;
-			slope[1] = y;
-		}
-		return slope;
 	}
 }
