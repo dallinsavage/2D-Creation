@@ -138,6 +138,8 @@ public class Display extends Application {
 					for (int i = 0; i < selection[0].getPointList().size(); i++) {
 						shownPoints.add(new Circle(selection[0].getPointList().get(i).getPointX(), selection[0].getPointList().get(i).getPointY(), 4));
 					}
+					pointSelection[0] = selection[0].getPointList().get(selectedPointIndex[0]);
+					shownPoints.get(selectedPointIndex[0]).setFill(Color.RED);
 					pane.getChildren().addAll(shownPoints);
 				}
 				catch (Exception ex) {
@@ -277,8 +279,10 @@ public class Display extends Application {
 	//add new shape
 		newShape.setOnAction(e -> {
 			pane.getChildren().removeAll(shapes);
+			pane.getChildren().removeAll(shownPoints);
 			shapes.add((new Shape(375, 375)));
 			pane.getChildren().addAll(shapes);
+			pane.getChildren().addAll(shownPoints);
 		});
 		
 	//delete selected shape
