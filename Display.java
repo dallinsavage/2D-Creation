@@ -293,9 +293,9 @@ public class Display extends Application {
 		
 	//add new shape
 		newShape.setOnAction(e -> {
-			pane.getChildren().clear();
+			pane.getChildren().removeAll(shapes);
+			pane.getChildren().removeAll(shownPoints);
 			shapes.add((new Shape(375, 375)));
-			pane.getChildren().add(vBox);
 			pane.getChildren().addAll(shapes);
 			pane.getChildren().addAll(shownPoints);
 		});
